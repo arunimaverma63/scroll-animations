@@ -6,10 +6,10 @@ import carImg from "@/assets/car-top-view.png";
 gsap.registerPlugin(ScrollTrigger);
 
 const STATS = [
-  { id: "box1", num: "58%", text: "Increase in pick up point use", bg: "#def54f", color: "#111", position: { top: "5%", right: "30%" } },
-  { id: "box2", num: "23%", text: "Decreased in customer phone calls", bg: "#6ac9ff", color: "#111", position: { bottom: "5%", right: "35%" } },
-  { id: "box3", num: "27%", text: "Increase in pick up point use", bg: "#333", color: "#fff", position: { top: "5%", right: "10%" } },
-  { id: "box4", num: "40%", text: "Decreased in customer phone calls", bg: "#fa7328", color: "#111", position: { bottom: "5%", right: "12.5%" } },
+  { id: "box1", num: "58%", text: "Increase in pick up point use", className: "bg-yellow-300 text-slate-900" },
+  { id: "box2", num: "23%", text: "Decreased in customer phone calls", className: "bg-blue-400 text-slate-900" },
+  { id: "box3", num: "27%", text: "Increase in pick up point use", className: "bg-slate-600 text-white" },
+  { id: "box4", num: "40%", text: "Decreased in customer phone calls", className: "bg-orange-500 text-slate-900" },
 ];
 
 const WELCOME_TEXT = "W E L C O M E I T Z F I Z Z".split(" ");
@@ -116,44 +116,20 @@ export default function ScrollCarAnimation() {
   }, []);
 
   return (
-    <div ref={sectionRef} style={{ height: "200vh", background: "#121212", position: "relative" }}>
+    <div ref={sectionRef} className="relative" style={{ height: "200vh", backgroundColor: "#121212" }}>
       {/* Sticky track */}
       <div
         ref={trackRef}
-        style={{
-          position: "sticky",
-          top: 0,
-          height: "100vh",
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#d1d1d1",
-          overflow: "hidden",
-        }}
+        className="sticky top-0 flex h-screen w-full items-center justify-center overflow-hidden bg-slate-300"
       >
         {/* Hero Content Container */}
-        <div style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 10
-        }}>
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
           {/* Headline */}
           <div
             ref={headlineRef}
+            className="mb-8 text-center font-bold text-slate-900"
             style={{
               fontSize: "clamp(3rem, 8vw, 8rem)",
-              fontWeight: "bold",
-              color: "#111",
-              textAlign: "center",
-              marginBottom: "2rem",
               letterSpacing: "0.2em",
               opacity: 0,
               transform: "translateY(50px) scale(0.9)"
@@ -163,11 +139,8 @@ export default function ScrollCarAnimation() {
               <span
                 key={i}
                 ref={(el) => (lettersRef.current[i] = el)}
-                style={{ 
-                  display: "inline-block",
-                  opacity: 0,
-                  margin: "0 0.1em"
-                }}
+                className="inline-block opacity-0"
+                style={{ margin: "0 0.1em" }}
               >
                 {char}
               </span>
@@ -175,42 +148,20 @@ export default function ScrollCarAnimation() {
           </div>
 
           {/* Statistics */}
-          <div style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            gap: "2rem",
-            maxWidth: "1200px",
-            width: "100%",
-            padding: "0 2rem"
-          }}>
+          <div className="flex flex-wrap items-center justify-center gap-8 w-full max-w-5xl px-8">
             {STATS.map((box, i) => (
               <div
                 key={box.id}
                 ref={(el) => (boxRefs.current[i] = el)}
+                className={`${box.className} rounded-2xl p-8 text-center min-w-[200px] shadow-2xl transition-transform duration-300 opacity-0`}
                 style={{
-                  opacity: 0,
-                  padding: "2rem",
-                  borderRadius: "1rem",
-                  background: box.bg,
-                  color: box.color,
-                  fontSize: "1.1rem",
-                  fontWeight: "500",
-                  textAlign: "center",
-                  minWidth: "200px",
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
                   transform: "translateY(30px) scale(0.8)",
-                  transition: "transform 0.3s ease"
                 }}
               >
-                <div style={{ 
-                  fontSize: "3rem", 
-                  fontWeight: "700",
-                  marginBottom: "0.5rem"
-                }}>
+                <div className="text-5xl font-bold mb-2">
                   {box.num}
                 </div>
-                <div>{box.text}</div>
+                <div className="text-base font-medium">{box.text}</div>
               </div>
             ))}
           </div>
@@ -219,39 +170,22 @@ export default function ScrollCarAnimation() {
         {/* Road */}
         <div
           id="road"
-          style={{
-            width: "100vw",
-            height: "200px",
-            backgroundColor: "#1e1e1e",
-            position: "absolute",
-            bottom: "10%",
-            overflow: "hidden",
-          }}
+          className="absolute bottom-[10%] w-screen h-48 bg-slate-900 overflow-hidden"
         >
           {/* Car */}
           <img
             ref={carRef}
             src={carImg}
             alt="car"
-            style={{
-              height: "200px",
-              position: "absolute",
-              top: 0,
-              left: 0,
-              zIndex: 10,
-            }}
+            className="absolute top-0 left-0 h-48 z-10"
           />
 
           {/* Trail */}
           <div
             ref={trailRef}
+            className="absolute top-0 left-0 h-48 z-0"
             style={{
-              height: "200px",
               background: "linear-gradient(90deg, #45db7d 0%, #2ecc71 100%)",
-              position: "absolute",
-              top: 0,
-              left: 0,
-              zIndex: 1,
               width: 0,
               boxShadow: "0 0 20px rgba(69, 219, 125, 0.5)"
             }}

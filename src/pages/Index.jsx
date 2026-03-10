@@ -2,7 +2,7 @@ import ScrollCarAnimation from "@/components/ScrollCarAnimation";
 
 const Index = () => {
   return (
-    <div style={{ background: "#121212", minHeight: "100vh" }}>
+    <div className="min-h-screen bg-slate-950">
       <ScrollCarAnimation />
     </div>
   );
