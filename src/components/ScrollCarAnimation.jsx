@@ -12,7 +12,7 @@ const STATS = [
   { id: "box4", num: "40%", text: "Decreased in customer phone calls", bg: "#fa7328", color: "#111", position: { bottom: "5%", right: "12.5%" } },
 ];
 
-const WELCOME_TEXT = "W E L C O M E   I T Z F I Z Z".split(" ");
+const WELCOME_TEXT = "W E L C O M E I T Z F I Z Z".split(" ");
 
 export default function ScrollCarAnimation() {
   const sectionRef = useRef(null);
