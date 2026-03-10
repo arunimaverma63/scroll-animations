@@ -12,7 +12,7 @@ const STATS = [
   { id: "box4", num: "40%", text: "Decreased in customer phone calls", bg: "#fa7328", color: "#111", position: { bottom: "5%", right: "12.5%" } },
 ];
 
-const WELCOME_TEXT = "WELCOME ITZFIZZ".split("");
+const WELCOME_TEXT = "W E L C O M E   I T Z F I Z Z".split(" ");
 
 export default function ScrollCarAnimation() {
   const sectionRef = useRef(null);
@@ -21,30 +21,62 @@ export default function ScrollCarAnimation() {
   const trailRef = useRef(null);
   const lettersRef = useRef([]);
   const boxRefs = useRef([]);
+  const headlineRef = useRef(null);
 
   useEffect(() => {
     const car = carRef.current;
     const trail = trailRef.current;
     const letters = lettersRef.current;
     const section = sectionRef.current;
+    const headline = headlineRef.current;
 
     const roadWidth = window.innerWidth;
     const carWidth = 150;
     const endX = roadWidth - carWidth;
 
-    // Get letter positions after mount
-    const letterOffsets = letters.map((l) => l?.offsetLeft ?? 0);
-    const valueAdd = section.querySelector(".value-add");
-    const valueRect = valueAdd.getBoundingClientRect();
-
     const ctx = gsap.context(() => {
+      // Initial load animation for headline
+      gsap.fromTo(headline, 
+        { 
+          opacity: 0, 
+          y: 50,
+          scale: 0.9
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 1.5,
+          ease: "power2.out"
+        }
+      );
+
+      // Staggered animation for stats
+      boxRefs.current.forEach((box, i) => {
+        gsap.fromTo(box,
+          { 
+            opacity: 0, 
+            y: 30,
+            scale: 0.8
+          },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.8,
+            delay: 0.5 + i * 0.2,
+            ease: "back.out(1.7)"
+          }
+        );
+      });
+
       // Car scroll animation
       gsap.to(car, {
         scrollTrigger: {
           trigger: section,
           start: "top top",
           end: "bottom top",
-          scrub: true,
+          scrub: 1,
           pin: trackRef.current,
         },
         x: endX,
@@ -53,14 +85,16 @@ export default function ScrollCarAnimation() {
           const carX = gsap.getProperty(car, "x") + carWidth / 2;
           letters.forEach((letter, i) => {
             if (!letter) return;
-            const letterX = valueRect.left + letterOffsets[i];
-            letter.style.opacity = carX >= letterX ? "1" : "0";
+            const letterRect = letter.getBoundingClientRect();
+            const sectionRect = section.getBoundingClientRect();
+            const relativeX = letterRect.left - sectionRect.left + letterRect.width / 2;
+            letter.style.opacity = carX >= relativeX ? "1" : "0";
           });
           gsap.set(trail, { width: carX });
         },
       });
 
-      // Stat boxes
+      // Stat boxes scroll animation
       const starts = [400, 600, 800, 1000];
       STATS.forEach((_, i) => {
         gsap.to(boxRefs.current[i], {
@@ -68,9 +102,12 @@ export default function ScrollCarAnimation() {
             trigger: section,
             start: `top+=${starts[i]} top`,
             end: `top+=${starts[i] + 200} top`,
-            scrub: true,
+            scrub: 1,
           },
           opacity: 1,
+          y: -20,
+          scale: 1.05,
+          ease: "power2.out"
         });
       });
     }, section);
@@ -95,6 +132,90 @@ export default function ScrollCarAnimation() {
           overflow: "hidden",
         }}
       >
+        {/* Hero Content Container */}
+        <div style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 10
+        }}>
+          {/* Headline */}
+          <div
+            ref={headlineRef}
+            style={{
+              fontSize: "clamp(3rem, 8vw, 8rem)",
+              fontWeight: "bold",
+              color: "#111",
+              textAlign: "center",
+              marginBottom: "2rem",
+              letterSpacing: "0.2em",
+              opacity: 0,
+              transform: "translateY(50px) scale(0.9)"
+            }}
+          >
+            {WELCOME_TEXT.map((char, i) => (
+              <span
+                key={i}
+                ref={(el) => (lettersRef.current[i] = el)}
+                style={{ 
+                  display: "inline-block",
+                  opacity: 0,
+                  margin: "0 0.1em"
+                }}
+              >
+                {char}
+              </span>
+            ))}
+          </div>
+
+          {/* Statistics */}
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: "2rem",
+            maxWidth: "1200px",
+            width: "100%",
+            padding: "0 2rem"
+          }}>
+            {STATS.map((box, i) => (
+              <div
+                key={box.id}
+                ref={(el) => (boxRefs.current[i] = el)}
+                style={{
+                  opacity: 0,
+                  padding: "2rem",
+                  borderRadius: "1rem",
+                  background: box.bg,
+                  color: box.color,
+                  fontSize: "1.1rem",
+                  fontWeight: "500",
+                  textAlign: "center",
+                  minWidth: "200px",
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+                  transform: "translateY(30px) scale(0.8)",
+                  transition: "transform 0.3s ease"
+                }}
+              >
+                <div style={{ 
+                  fontSize: "3rem", 
+                  fontWeight: "700",
+                  marginBottom: "0.5rem"
+                }}>
+                  {box.num}
+                </div>
+                <div>{box.text}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Road */}
         <div
           id="road"
@@ -102,7 +223,8 @@ export default function ScrollCarAnimation() {
             width: "100vw",
             height: "200px",
             backgroundColor: "#1e1e1e",
-            position: "relative",
+            position: "absolute",
+            bottom: "10%",
             overflow: "hidden",
           }}
         >
@@ -125,68 +247,16 @@ export default function ScrollCarAnimation() {
             ref={trailRef}
             style={{
               height: "200px",
-              background: "#45db7d",
+              background: "linear-gradient(90deg, #45db7d 0%, #2ecc71 100%)",
               position: "absolute",
               top: 0,
               left: 0,
               zIndex: 1,
               width: 0,
+              boxShadow: "0 0 20px rgba(69, 219, 125, 0.5)"
             }}
           />
-
-          {/* Welcome text */}
-          <div
-            className="value-add"
-            style={{
-              top: "30%",
-              fontSize: "8rem",
-              fontWeight: "bold",
-              position: "absolute",
-              left: "5%",
-              zIndex: 5,
-              display: "flex",
-              gap: "0.3rem",
-            }}
-          >
-            {WELCOME_TEXT.map((char, i) => (
-              <span
-                key={i}
-                ref={(el) => (lettersRef.current[i] = el)}
-                style={{ color: "#111", opacity: 0 }}
-              >
-                {char === " " ? "\u00A0" : char}
-              </span>
-            ))}
-          </div>
         </div>
-
-        {/* Stat boxes */}
-        {STATS.map((box, i) => (
-          <div
-            key={box.id}
-            ref={(el) => (boxRefs.current[i] = el)}
-            style={{
-              opacity: 0,
-              padding: "30px",
-              borderRadius: "10px",
-              margin: "1rem",
-              position: "absolute",
-              zIndex: 5,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "flex-start",
-              flexDirection: "column",
-              gap: "5px",
-              background: box.bg,
-              color: box.color,
-              fontSize: "18px",
-              ...box.position,
-            }}
-          >
-            <span style={{ fontSize: "58px", fontWeight: 600 }}>{box.num}</span>
-            {box.text}
-          </div>
-        ))}
       </div>
     </div>
   );
