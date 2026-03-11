@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import carImg from "@/assets/car-top-view.png";
+import carImg from "@/assets/McLaren 720S 2022 top view.png";
 
 gsap.registerPlugin(ScrollTrigger);
 
